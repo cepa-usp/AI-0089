@@ -1,0 +1,13 @@
+AI-0089
+-------
+
+Objetivo da Atividade Interativa (AI): exercitar o cálculo da energia potencial gravitacional.
+
+Objetivo do usuário: informar corretamente o valor da energia potencial gravitacional do sistema apresentado.
+
+Resolução: utilize as informações na tela para calcular a energia potencial gravitacional do sistema de planetas apresentado.
+
+Observações:
+1) Esta AI usa SCORM para notificar o LMS (moodle) quanto ao aproveitamento do usuário, numa escala de 0 a 100 (inteiros apenas). Este recurso é ativado quando o usuário seleciona a opção "valendo nota". 
+2) Para orientações quanto às intereções com a AI, veja o menu de orientações (botão "?").
+3) As massas e as distâncias dos planetas são escolhidos aleatoriamente a cada novo exercício.
