@@ -16,7 +16,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'6/6/2012'</value>
+      <value>'11/6/2012'</value>
     </define>
     <verbose-stacktraces>true</verbose-stacktraces>
     <source-path append="true">
@@ -29,6 +29,7 @@
       <path-element>C:\Documents and Settings\Arthur\Meus documentos\CEPA\GitHub\Framework\dev\AI\lib\as3corelib.swc</path-element>
       <path-element>C:\Documents and Settings\Arthur\Meus documentos\CEPA\GitHub\Framework\dev\AI\lib\ui.swc</path-element>
       <path-element>C:\Documents and Settings\Arthur\Meus documentos\CEPA\GitHub\AI-0089\lib\SciNot.swc</path-element>
+      <path-element>C:\Documents and Settings\Arthur\Meus documentos\CEPA\GitHub\AI-0089\lib\arte.swc</path-element>
     </library-path>
   </compiler>
   <file-specs>
@@ -37,7 +38,7 @@
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>30</default-frame-rate>
   <default-size>
-    <width>800</width>
-    <height>600</height>
+    <width>700</width>
+    <height>500</height>
   </default-size>
 </flex-config>
