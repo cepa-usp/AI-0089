@@ -1,22 +1,30 @@
 package  
 {
+	import cepa.ai.IPlayInstance;
+	import cepa.utils.NotacaoCientifica;
 	/**
 	 * ...
 	 * @author Arthur
 	 */
-	public class PlayInstance 
+	public class PlayInstance implements IPlayInstance
 	{
 		
-		private var _mode:int;
+		private var _playMode:int;
 		private var _mass1:NotacaoCientifica = new NotacaoCientifica();		
 		private var _mass2:NotacaoCientifica = new NotacaoCientifica();
 		private var _distance:NotacaoCientifica = new NotacaoCientifica();
-		
+		private var _answerMantissa:Number = Number.NaN;
+		private var _answerExponent:Number = Number.NaN;
+		private var score:Number = 0;
 		
 		
 		public function PlayInstance() 
 		{
 			create();
+		}
+		
+		public function getScore():Number {
+			return score;
 		}
 		
 		public function create() {
@@ -45,15 +53,7 @@ package
 			distance.exponent = int(ii);
 		}
 		
-		public function get mode():int 
-		{
-			return _mode;
-		}
-		
-		public function set mode(value:int):void 
-		{
-			_mode = value;
-		}
+
 		
 		public function get mass1():NotacaoCientifica 
 		{
@@ -85,6 +85,37 @@ package
 			_distance = value;
 		}
 		
+		public function get playMode():int 
+		{
+			return _playMode;
+		}
+		
+		public function set playMode(value:int):void 
+		{
+			_playMode = value;
+		}
+		
+		public function get answerMantissa():Number 
+		{
+			return _answerMantissa;
+		}
+		
+		public function set answerMantissa(value:Number):void 
+		{
+			_answerMantissa = value;
+		}
+		
+		public function get answerExponent():Number 
+		{
+			return _answerExponent;
+		}
+		
+		public function set answerExponent(value:Number):void 
+		{
+			_answerExponent = value;
+		}
+		
+		
 		public function debug():void {
 			trace("******** sit 1 ****** ");
 			trace("massa 1:", mass1);
@@ -95,10 +126,27 @@ package
 		}
 		
 		public function returnAsObject():Object {
-			return { mode:(this.mode == 0?"FREE":"EVAL"), mass1: scinotToObj(this.mass1), mass2:scinotToObj(this.mass2), distance:scinotToObj(this.distance), E:scinotToObj(this.energy) };
+			var obj_answer:Object = new Object();
+			obj_answer.mantissa = answerMantissa;
+			obj_answer.exponent = answerExponent;
+			return { mode:(this.playMode == 0?"FREE":"EVAL"), mass1: scinotToObj(this.mass1), mass2:scinotToObj(this.mass2), distance:scinotToObj(this.distance), E:scinotToObj(this.energy), answer:obj_answer, score:this.score };
 		}
+		
 		public function scinotToObj(el:NotacaoCientifica) {
 			return { mant: el.mantissa, exp: el.exponent };
+		}
+		
+		/* INTERFACE cepa.ai.IPlayInstance */
+		
+		public function bind(obj:Object):void 
+		{
+			
+		}
+		
+	
+		public function evaluate():void 
+		{
+			
 		}
 		
 	}

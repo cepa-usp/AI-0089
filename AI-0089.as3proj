@@ -5,7 +5,7 @@
     <movie outputType="Application" />
     <movie input="" />
     <movie path="bin\AI0089.swf" />
-    <movie fps="30" />
+    <movie fps="35" />
     <movie width="700" />
     <movie height="500" />
     <movie version="10" />
@@ -54,7 +54,6 @@
   <libraryPaths>
     <element path="..\Framework\dev\AI\lib\as3corelib.swc" />
     <element path="..\Framework\dev\AI\lib\ui.swc" />
-    <element path="lib\SciNot.swc" />
     <element path="lib\arte.swc" />
   </libraryPaths>
   <!-- External Libraries -->
