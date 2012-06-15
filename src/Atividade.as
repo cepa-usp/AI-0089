@@ -192,7 +192,28 @@ package
 			dist.txMantissa.text = "d=" + dist.txMantissa.text;
 			dist.y = p.y;
 			s.addChild(dist);
+			var p1:Sprite = Sprite(Sprite(layerPlanetas.getChildByName("play")).getChildByName("planeta1"));
+			var p2:Sprite = Sprite(Sprite(layerPlanetas.getChildByName("play")).getChildByName("planeta2"));
+			var lb_p1:SciNotComponent = new SciNotComponent();
+			lb_p1.setType(SciNotComponent.TYPE_VIEW);
+			lb_p1.setTextColor(0xF8D307);
+			lb_p1.setValue(playInstance.mass1.mantissa, playInstance.mass1.exponent);
+			lb_p1.x = p1.x;
+			lb_p1.y = p1.y + 30;
+			s.addChild(lb_p1);
+
+			var lb_p2:SciNotComponent = new SciNotComponent();
+			lb_p2.setType(SciNotComponent.TYPE_VIEW);
+			lb_p2.setTextColor(0xF8D307);
+			lb_p2.setValue(playInstance.mass2.mantissa, playInstance.mass2.exponent);			
+			lb_p2.x = p2.x;
+			lb_p2.y = p2.y + 30;
+			s.addChild(lb_p2);
+			
+			
 			Actuate.tween(s, 1, { alpha:1 } );
+
+			
 
 		}
 		

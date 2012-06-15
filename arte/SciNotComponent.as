@@ -18,7 +18,9 @@
 		public function SciNotComponent() {
 			// constructor code
 			TextField(this.txMantissa).addEventListener(FocusEvent.FOCUS_IN, onTxFocusIn);
+			TextField(this.txMantissa).restrict = "0-9,\\-"
 			TextField(this.txMantissa).addEventListener(FocusEvent.FOCUS_IN, onTxFocusOut);
+			TextField(this.txExponent).restrict = "0-9,\\-"
 		}
 		
 		private function onTxFocusOut(e:FocusEvent):void 
@@ -53,15 +55,23 @@
 		
 		public function setType(val:int):void {
 			this.type = val;
+			
 			switch(type) {				
 				case TYPE_EDIT:
 				case TYPE_EDIT_NOADJUST:
 					this.outter.visible = true;
 					this.fields.visible = true;
+					TextField(this.txMantissa).selectable = true;
+					TextField(this.txExponent).selectable = true;
 					break;
 				case TYPE_VIEW:
 					this.outter.visible = false;
 					this.fields.visible = false;					
+					TextField(this.txMantissa).selectable = false;
+					TextField(this.txExponent).selectable = false;
+					TextField(this.txMantissa).mouseEnabled = false;
+					TextField(this.txExponent).mouseEnabled = false;
+					TextField(this.txExponent).selectable = false;
 					break;
 			}
 		}

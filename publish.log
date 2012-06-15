@@ -1,5 +1,7 @@
 Copying from /c/Documents and Settings/Arthur/Meus documentos/CEPA/GitHub/AI-0089 to cepa@arquivos.atp.usp.br:/work/PUBLICACAO/atividades-interativas/AI-0089
 building file list ... done
+swf/
+swf/AI-0089.swf
 
-sent 258 bytes  received 12 bytes  180.00 bytes/sec
-total size is 528863  speedup is 1958.75
+sent 412361 bytes  received 3676 bytes  832074.00 bytes/sec
+total size is 516248  speedup is 1.24
