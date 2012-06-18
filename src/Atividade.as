@@ -2,6 +2,10 @@ package
 {
 	import cepa.ai.AI;
 	import cepa.ai.AIObserver;
+	import cepa.eval.ProgressiveEvaluator;
+	import cepa.tutorial.CaixaTexto;
+	import cepa.tutorial.Tutorial;
+	import cepa.tutorial.TutorialEvent;
 	import com.eclecticdesignstudio.motion.Actuate;
 	import com.eclecticdesignstudio.motion.easing.Elastic;
 	import com.eclecticdesignstudio.motion.easing.Linear;
@@ -41,29 +45,37 @@ package
 		private var ai:AI = null;
 		private var playInstance:PlayInstance = null;
 		
+		
 		public function Atividade(ai:AI) 
 		{
 			this.ai = ai;
+			ai.evaluator = new ProgressiveEvaluator(ai);
 			addChild(layerBackground);
 			layerBackground.addChild(new Background());
 			addChild(layerPlanetas);
 			addChild(layerControle);
+			//ai.debugMode = true;
+			//ai.debugTutorial = true;
 			layerControle.addChild(blocoControle);
 			blocoControle.x = posblocoControle.x;
 			blocoControle.y = posblocoControle.y;
 			addChild(layerFeedback);
+			ai.container.setAboutScreen(new AboutScreen());
+			ai.container.setInfoScreen(new InstructScreen());
 			rotateBg();
 			changeState(STATE_RESET);
-			blocoControle.btTerminei.addEventListener(MouseEvent.CLICK, function(e:Event) {
+			blocoControle.btTerminei.addEventListener(MouseEvent.CLICK, function(e:Event):void {
 				changeState(STATE_EVALUATING);
 			});
-			blocoControle.btNovoExercicio.addEventListener(MouseEvent.CLICK, function(e:Event) {
+			blocoControle.btNovoExercicio.addEventListener(MouseEvent.CLICK, function(e:Event):void {
 				changeState(STATE_RESET);
 			});	
-			blocoControle.btValendoNota.addEventListener(MouseEvent.CLICK, function(e:Event) {
-				mode = MODE_EVALUATE;
-				changeState(STATE_RESET);
+			blocoControle.btValendoNota.addEventListener(MouseEvent.CLICK, function(e:Event):void {
+				
+				openValendoScreen();
 			});			
+			
+			
 		}
 		
 		private var r:Number = 0;
@@ -75,6 +87,51 @@ package
 		
 		
 		
+		
+		public function openValendoScreen():void {
+			var valendoScreen:FeedBackScreen = new FeedBackScreen();
+			valendoScreen.name = "valendo";
+			valendoScreen.btOk.addEventListener(MouseEvent.CLICK, function(e:Event) {
+				mode = MODE_EVALUATE;
+				changeState(STATE_RESET);
+				ai.container.closeScreen(Sprite(ai.container.getChildByName("valendo")));
+			});
+			valendoScreen.btCancel.addEventListener(MouseEvent.CLICK, function(e:Event) {
+				ai.container.closeScreen(Sprite(ai.container.getChildByName("valendo")));
+			});			
+			valendoScreen.addEventListener(Event.CLOSE, function(e:Event) {
+				ai.container.removeChild(ai.container.getChildByName("valendo"));
+			});
+			ai.container.addChild(valendoScreen);
+			ai.container.openScreen(valendoScreen)
+		}
+		
+
+		public function openStatScreen():void {
+			var stats:StatsScreen = new StatsScreen();
+			stats.name = "stats";
+			var nTotal:int = 0;
+			var nValendo:int = 0;
+			var nNaoValendo:int = 0;
+			var scoreMin:int = 0;
+			var scoreTotal:int = 0;
+			var scoreValendo:int = 0;
+			stats.valendoMC.gotoAndStop((mode == MODE_FREEPLAY?2:1));
+			stats.nTotal.text = nTotal.toString();
+			stats.nValendo.text = nValendo.toString();
+			stats.nNaoValendo.text = nNaoValendo.toString();
+			stats.scoreMin.text = scoreMin.toString();
+			stats.scoreTotal.text = scoreTotal.toString();
+			stats.scoreValendo.text = scoreValendo.toString();
+			stats.closeButton.addEventListener(MouseEvent.CLICK, function(e:Event) {
+				ai.container.closeScreen(Sprite(ai.container.getChildByName("stats")));
+			});
+			stats.addEventListener(Event.CLOSE, function(e:Event) {
+				ai.container.removeChild(ai.container.getChildByName("stats"));
+			});
+			ai.container.addChild(stats);
+			ai.container.openScreen(stats)
+		}		
 		
 		public function changeState(state:int):void {
 			this.state = state;
@@ -122,6 +179,7 @@ package
 			scr.txRespostaUsuario.txMantissa.text = playInstance.answerMantissa.toString();
 			scr.txRespostaUsuario.txExponent.text = playInstance.answerExponent.toString();
 			scr.txRespostaEsperada.setValue(playInstance.energy.mantissa, playInstance.energy.exponent);
+			scr.txPontuacao.text = Number(playInstance.getScore() * 100).toString() + "%";
 			ai.container.stage.focus =  blocoControle.btNovoExercicio;
 
 			
@@ -148,12 +206,13 @@ package
 			spr.name = "play";
 			var planeta1:Planeta1 = new Planeta1();
 			planeta1.name = "planeta1";
+			if (ai.debugMode) trace("Resposta esperada: ", play.energy);
 			var planeta2:Planeta2 = new Planeta2();
 			planeta2.name = "planeta2";
 			spr.addChild(planeta1);
 			spr.addChild(planeta2);
 			pos1 = new Point(rndBetween(200, 300), rndBetween(200, 400))
-			pos2 = new Point(rndBetween(400, 600), rndBetween(200, 400))
+			pos2 = new Point(rndBetween(400, 550), rndBetween(200, 400))
 			var scale1:Number = rndBetween(7, 10) / 10;
 			var scale2:Number = rndBetween(7, 10) / 10;
 			layerPlanetas.addChild(spr);			
@@ -174,6 +233,7 @@ package
 			
 			Actuate.tween(planeta1, 1.1, { scaleX:1, scaleY:1, x:pos1.x, y:pos1.y } ).ease(Quad.easeInOut);
 			Actuate.tween(planeta2, 1.1, { scaleX:1, scaleY:1, x:pos2.x, y:pos2.y } ).ease(Quad.easeInOut).onComplete(enablePlay);
+			
 		}
 		
 		private function enablePlay():void 
@@ -189,7 +249,7 @@ package
 			dist.setTextColor(0xFF8000);
 			dist.setValue(playInstance.distance.mantissa, playInstance.distance.exponent);
 			dist.x = p.x - (dist.width / 2);
-			dist.txMantissa.text = "d=" + dist.txMantissa.text;
+			dist.txMantissa.text = "d = " + dist.txMantissa.text;
 			dist.y = p.y;
 			s.addChild(dist);
 			var p1:Sprite = Sprite(Sprite(layerPlanetas.getChildByName("play")).getChildByName("planeta1"));
@@ -200,6 +260,7 @@ package
 			lb_p1.setValue(playInstance.mass1.mantissa, playInstance.mass1.exponent);
 			lb_p1.x = p1.x;
 			lb_p1.y = p1.y + 30;
+			lb_p1.txMantissa.text = "m1 = " + lb_p1.txMantissa.text;
 			s.addChild(lb_p1);
 
 			var lb_p2:SciNotComponent = new SciNotComponent();
@@ -208,6 +269,7 @@ package
 			lb_p2.setValue(playInstance.mass2.mantissa, playInstance.mass2.exponent);			
 			lb_p2.x = p2.x;
 			lb_p2.y = p2.y + 30;
+			lb_p2.txMantissa.text = "m2 = " + lb_p2.txMantissa.text;
 			s.addChild(lb_p2);
 			
 			
@@ -246,13 +308,14 @@ package
 			blocoControle.btNovoExercicio.visible = true;
 			blocoControle.btTerminei.visible = false;
 			ai.container.enableComponent(blocoControle.btNovoExercicio);
-			playInstance.answerMantissa = parseFloat(blocoControle.txEnergy.txMantissa.text);
-			playInstance.answerExponent = parseFloat(blocoControle.txEnergy.txExponent.text);
 			
+			playInstance.answerMantissa = parseFloat(blocoControle.txEnergy.txMantissa.text.replace(",", "."));
+			playInstance.answerExponent = parseFloat(blocoControle.txEnergy.txExponent.text.replace(",", "."));
 			playInstance.evaluate();
-			trace("avaliou")
 			
-			ai.playInstances.push(playInstance);
+			//trace("avaliou")
+			
+			ai.evaluator.addPlayInstance(playInstance);
 			
 			changeState(STATE_FEEDBACK);
 			
@@ -280,7 +343,29 @@ package
 		
 		public function onTutorialClick():void 
 		{
+			ai.container.disableComponent(ai.container.optionButtons.btTutorial)
+			var t:Tutorial = new Tutorial();
 			
+			t.adicionarBalao('Digite aqui a energia potencial gravitacional', new Point(123,61), CaixaTexto.TOP, CaixaTexto.FIRST);
+			t.adicionarBalao('Pressione \"Terminei\" para verificar sua resposta', new Point(92,90), CaixaTexto.TOP, CaixaTexto.FIRST);
+			t.adicionarBalao('Pressione \"valendo nota\" quando achar que já está pronto(a) para ser avaliado(a).', new Point(223, 93), CaixaTexto.TOP, CaixaTexto.FIRST);
+			t.iniciar(this.ai.container.stage);
+			
+			t.addEventListener(TutorialEvent.FIM_TUTORIAL, onTutorialEnd);
+
+		}
+		
+		private function onTutorialEnd(e:TutorialEvent):void 
+		{
+			ai.container.stage.focus = blocoControle.txEnergy.txMantissa;
+			ai.container.enableComponent(ai.container.optionButtons.btTutorial)
+		}
+		
+		/* INTERFACE cepa.ai.AIObserver */
+		
+		public function onStatsClick():void 
+		{
+			openStatScreen();
 		}
 		
 	

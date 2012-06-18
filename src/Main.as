@@ -41,6 +41,13 @@ package
 			
 		}
 		
+		/* INTERFACE cepa.ai.AIObserver */
+		
+		public function onStatsClick():void 
+		{
+			
+		}
+		
 
 		private var atividade:Atividade 
 		private function init(e:Event = null):void 
@@ -50,7 +57,7 @@ package
 			ai.container.messageLabel.visible = false;
 			ai.container.addChild(atividade);
 			ai.addObserver(this);
-			ai.addObserver(atividade);
+			//ai.addObserver(atividade);
 			
 			
 			

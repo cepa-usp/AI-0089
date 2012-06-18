@@ -16,6 +16,7 @@ package
 		private var _answerMantissa:Number = Number.NaN;
 		private var _answerExponent:Number = Number.NaN;
 		private var score:Number = 0;
+		private var _obs:Object;
 		
 		
 		public function PlayInstance() 
@@ -36,7 +37,7 @@ package
 		public function get energy():NotacaoCientifica {
 			var g:NotacaoCientifica = new NotacaoCientifica();
 			g.setExpValues(6.67, -11);
-			var n:Number = ( -1 * g.value *  mass1.value * mass2.value) / distance.value
+			var n:Number = ((g.value *  mass1.value * mass2.value) / distance.value) * -1;
 			var nc:NotacaoCientifica = new NotacaoCientifica();
 			nc.setValue(n);
 			return nc;
@@ -115,6 +116,16 @@ package
 			_answerExponent = value;
 		}
 		
+		public function get obs():Object 
+		{
+			return _obs;
+		}
+		
+		public function set obs(value:Object):void 
+		{
+			_obs = value;
+		}
+		
 		
 		public function debug():void {
 			trace("******** sit 1 ****** ");
@@ -129,7 +140,7 @@ package
 			var obj_answer:Object = new Object();
 			obj_answer.mantissa = answerMantissa;
 			obj_answer.exponent = answerExponent;
-			return { mode:(this.playMode == 0?"FREE":"EVAL"), mass1: scinotToObj(this.mass1), mass2:scinotToObj(this.mass2), distance:scinotToObj(this.distance), E:scinotToObj(this.energy), answer:obj_answer, score:this.score };
+			return { mode:(this.playMode == 0?"FREE":"EVAL"), mass1: scinotToObj(this.mass1), mass2:scinotToObj(this.mass2), distance:scinotToObj(this.distance), E:scinotToObj(this.energy), answer:obj_answer, score:this.score, obs:this.obs };
 		}
 		
 		public function scinotToObj(el:NotacaoCientifica) {
@@ -146,7 +157,51 @@ package
 	
 		public function evaluate():void 
 		{
+			var e:NotacaoCientifica = energy;
 			
+			var aval_1:Object = new Object();
+			aval_1.name = "Valor numérico dos campos:";
+			aval_1.ok = true;
+			aval_1.score = 0.4;
+			var ans:NotacaoCientifica = new NotacaoCientifica().setExpValues(answerMantissa, answerExponent);
+			if (!isIntoToleranceIntervalPercent(Math.abs(ans.value), Math.abs(e.value), 0.01)) {
+				aval_1.ok = false;
+				aval_1.score = 0.0
+				//trace("errou2")
+			} 			
+
+			var aval_2:Object  = new Object();
+			aval_2.name = "Sinal negativo da energia potencial gravitacional";
+			aval_2.ok = false;
+			aval_2.score = 0;
+			if (signal(answerMantissa * Math.pow(10, answerExponent)) == signal(e.value) && aval_1.ok) {
+			aval_2.ok = true;
+			aval_2.score = 0.4;
+			};
+			
+
+			var aval_3:Object  = new Object();
+			aval_3.name = "Resposta expressa em notação científica";
+			aval_3.ok = false;
+			aval_3.score = 0;
+			if (answerMantissa > -10 && answerMantissa < 10 && aval_1.ok) {
+				aval_3.ok = false;
+				aval_3.score = 0.2;				
+			};
+			
+			score = aval_1.score + aval_2.score + aval_3.score;
+		}
+		
+		
+		public function isIntoToleranceIntervalPercent(val1:Number, val2:Number, tolerance:Number):Boolean {
+			var tolmin:Number = val2 - (val2 *  tolerance);
+			var tolmax:Number = val2 + (val2 *  tolerance);
+			
+			return (val1 > (tolmin) && val1 < (tolmax))
+		}
+		
+		public function signal(val:Number):Boolean {
+			return (val >= 0);
 		}
 		
 	}
