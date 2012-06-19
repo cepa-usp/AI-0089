@@ -1,6 +1,7 @@
 package  
 {
 	import cepa.ai.AI;
+	import cepa.ai.AIConstants;
 	import cepa.ai.AIObserver;
 	import cepa.eval.ProgressiveEvaluator;
 	import cepa.tutorial.CaixaTexto;
@@ -15,7 +16,10 @@ package
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.filters.BlurFilter;
+	import flash.filters.GlowFilter;
 	import flash.geom.Point;
+	import flash.text.TextField;
 	import flash.utils.Timer;
 	/**
 	 * ...
@@ -54,7 +58,7 @@ package
 			layerBackground.addChild(new Background());
 			addChild(layerPlanetas);
 			addChild(layerControle);
-			//ai.debugMode = true;
+			ai.debugMode = true;
 			//ai.debugTutorial = true;
 			layerControle.addChild(blocoControle);
 			blocoControle.x = posblocoControle.x;
@@ -65,7 +69,9 @@ package
 			rotateBg();
 			changeState(STATE_RESET);
 			blocoControle.btTerminei.addEventListener(MouseEvent.CLICK, function(e:Event):void {
-				changeState(STATE_EVALUATING);
+				if(checkFields()){
+					changeState(STATE_EVALUATING);
+				}
 			});
 			blocoControle.btNovoExercicio.addEventListener(MouseEvent.CLICK, function(e:Event):void {
 				changeState(STATE_RESET);
@@ -73,8 +79,38 @@ package
 			blocoControle.btValendoNota.addEventListener(MouseEvent.CLICK, function(e:Event):void {
 				
 				openValendoScreen();
-			});			
+			});	
 			
+			
+		}
+		
+		private function checkFields():Boolean 
+		{
+			// Enviar essa função pra dentro do componente
+			var r:Boolean = true;
+			if (blocoControle.txEnergy.txExponent.text == "") {
+				highLightControl(blocoControle.txEnergy.fields.borderExp);
+				r = false;
+			}
+			if (blocoControle.txEnergy.txMantissa.text == "") {
+				highLightControl(blocoControle.txEnergy.fields.borderMantissa);
+				r = false;
+			}
+			return r;
+		}
+		
+		private var a:Sprite = new Sprite();
+		private function highLightControl(tx:Sprite):void 
+		{
+			a.filters = tx.filters;
+			tx.filters = [new GlowFilter(0xFF8000, 0.01, 3, 3, 2, 2, true)];			
+			Actuate.effects(tx, 0.4).filter(GlowFilter, { alpha:1 ,  blurX: 12, blurY: 12 } ).onComplete(function() {
+				Actuate.effects(tx, 0.6).filter(GlowFilter, { alpha:0 ,  blurX: 12, blurY: 12 } ).onComplete(function() {
+					tx.filters = a.filters;
+				})
+			});
+			
+
 			
 		}
 		
@@ -91,15 +127,15 @@ package
 		public function openValendoScreen():void {
 			var valendoScreen:FeedBackScreen = new FeedBackScreen();
 			valendoScreen.name = "valendo";
-			valendoScreen.btOk.addEventListener(MouseEvent.CLICK, function(e:Event) {
+			valendoScreen.btOk.addEventListener(MouseEvent.CLICK, function(e:Event):void {
 				mode = MODE_EVALUATE;
 				changeState(STATE_RESET);
 				ai.container.closeScreen(Sprite(ai.container.getChildByName("valendo")));
 			});
-			valendoScreen.btCancel.addEventListener(MouseEvent.CLICK, function(e:Event) {
+			valendoScreen.btCancel.addEventListener(MouseEvent.CLICK, function(e:Event):void {
 				ai.container.closeScreen(Sprite(ai.container.getChildByName("valendo")));
 			});			
-			valendoScreen.addEventListener(Event.CLOSE, function(e:Event) {
+			valendoScreen.addEventListener(Event.CLOSE, function(e:Event):void {
 				ai.container.removeChild(ai.container.getChildByName("valendo"));
 			});
 			ai.container.addChild(valendoScreen);
@@ -110,12 +146,13 @@ package
 		public function openStatScreen():void {
 			var stats:StatsScreen = new StatsScreen();
 			stats.name = "stats";
-			var nTotal:int = 0;
-			var nValendo:int = 0;
-			var nNaoValendo:int = 0;
-			var scoreMin:int = 0;
-			var scoreTotal:int = 0;
-			var scoreValendo:int = 0;
+			var eval:ProgressiveEvaluator = ProgressiveEvaluator(ai.evaluator);
+			var nTotal:int = eval.numTrials;
+			var nValendo:int = eval.numTrialsByMode(AIConstants.PLAYMODE_EVALUATE);
+			var nNaoValendo:int = eval.numTrialsByMode(AIConstants.PLAYMODE_FREEPLAY);
+			var scoreMin:int = eval.minimumScoreForAcceptance * 100;
+			var scoreTotal:int = eval.scoreGeneralMean * 100;
+			var scoreValendo:int = eval.score * 100;
 			stats.valendoMC.gotoAndStop((mode == MODE_FREEPLAY?2:1));
 			stats.nTotal.text = nTotal.toString();
 			stats.nValendo.text = nValendo.toString();
@@ -202,6 +239,7 @@ package
 			blocoControle.txEnergy.txExponent.text = "";
 			var play:PlayInstance = new PlayInstance();
 			playInstance = play;
+			play.playMode= mode
 			var spr:Sprite = new Sprite();
 			spr.name = "play";
 			var planeta1:Planeta1 = new Planeta1();
@@ -260,7 +298,7 @@ package
 			lb_p1.setValue(playInstance.mass1.mantissa, playInstance.mass1.exponent);
 			lb_p1.x = p1.x;
 			lb_p1.y = p1.y + 30;
-			lb_p1.txMantissa.text = "m1 = " + lb_p1.txMantissa.text;
+			lb_p1.txMantissa.text = "m = " + lb_p1.txMantissa.text;
 			s.addChild(lb_p1);
 
 			var lb_p2:SciNotComponent = new SciNotComponent();
@@ -269,7 +307,7 @@ package
 			lb_p2.setValue(playInstance.mass2.mantissa, playInstance.mass2.exponent);			
 			lb_p2.x = p2.x;
 			lb_p2.y = p2.y + 30;
-			lb_p2.txMantissa.text = "m2 = " + lb_p2.txMantissa.text;
+			lb_p2.txMantissa.text = "m = " + lb_p2.txMantissa.text;
 			s.addChild(lb_p2);
 			
 			
