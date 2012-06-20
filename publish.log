@@ -1,7 +1,12 @@
 Copying from /c/Documents and Settings/Arthur/Meus documentos/CEPA/GitHub/AI-0089 to cepa@arquivos.atp.usp.br:/work/PUBLICACAO/atividades-interativas/AI-0089
 building file list ... done
+./
+AI-0089_SCO.zip
+imsmanifest.xml
+js/ai.js
+js/scorm_wrapper.min.js
 swf/
 swf/AI-0089.swf
 
-sent 436389 bytes  received 3568 bytes  293304.67 bytes/sec
-total size is 540272  speedup is 1.23
+sent 860778 bytes  received 3959 bytes  1729474.00 bytes/sec
+total size is 1023014  speedup is 1.18
