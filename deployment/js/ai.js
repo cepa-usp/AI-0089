@@ -1,4 +1,4 @@
-var scorm = pipwerks.SCORM; // Seção SCORM
+﻿var scorm = pipwerks.SCORM; // Seção SCORM
 scorm.version = "2004"; // Versão da API SCORM
 
 var aiNumber = "0089";
@@ -25,7 +25,7 @@ function init () {
 	attributes.id = "ai";
 	attributes.align = "middle";
 
-	swfobject.embedSWF("swf/AI_Loader.swf", "ai-container", flashvars.width, flashvars.height, "10.0.0", "expressInstall.swf", flashvars, params, attributes);
+	swfobject.embedSWF("swf/AI-" + aiNumber + ".swf", "ai-container", flashvars.width, flashvars.height, "10.0.0", "expressInstall.swf", flashvars, params, attributes);
 	
 }
 

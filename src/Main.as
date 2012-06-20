@@ -48,6 +48,18 @@ package
 			
 		}
 		
+		/* INTERFACE cepa.ai.AIObserver */
+		
+		public function onScormConnected():void 
+		{
+			
+		}
+		
+		public function onScormConnectionError():void 
+		{
+			
+		}
+		
 
 		private var atividade:Atividade 
 		private function init(e:Event = null):void 
@@ -57,6 +69,7 @@ package
 			ai.container.messageLabel.visible = false;
 			ai.container.addChild(atividade);
 			ai.addObserver(this);
+			ai.initialize();
 			//ai.addObserver(atividade);
 			
 			

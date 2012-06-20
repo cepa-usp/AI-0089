@@ -3,5 +3,5 @@ building file list ... done
 swf/
 swf/AI-0089.swf
 
-sent 412361 bytes  received 3676 bytes  832074.00 bytes/sec
-total size is 516248  speedup is 1.24
+sent 436389 bytes  received 3568 bytes  293304.67 bytes/sec
+total size is 540272  speedup is 1.23

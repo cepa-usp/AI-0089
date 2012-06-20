@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\AI0089.swf" />
+    <movie path="bin\AI-0089.swf" />
     <movie fps="35" />
     <movie width="700" />
     <movie height="500" />

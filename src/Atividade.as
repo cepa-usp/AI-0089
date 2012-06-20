@@ -4,6 +4,7 @@ package
 	import cepa.ai.AIConstants;
 	import cepa.ai.AIObserver;
 	import cepa.eval.ProgressiveEvaluator;
+	import cepa.scorm.CmiConstants;
 	import cepa.tutorial.CaixaTexto;
 	import cepa.tutorial.Tutorial;
 	import cepa.tutorial.TutorialEvent;
@@ -244,7 +245,7 @@ package
 			spr.name = "play";
 			var planeta1:Planeta1 = new Planeta1();
 			planeta1.name = "planeta1";
-			if (ai.debugMode) trace("Resposta esperada: ", play.energy);
+			ai.debugScreen.msg("Resposta esperada: " +  play.energy);
 			var planeta2:Planeta2 = new Planeta2();
 			planeta2.name = "planeta2";
 			spr.addChild(planeta1);
@@ -404,6 +405,39 @@ package
 		public function onStatsClick():void 
 		{
 			openStatScreen();
+		}
+		
+		/* INTERFACE cepa.ai.AIObserver */
+		
+		public function onScormConnected():void 
+		{
+			// passar pro evaluator
+			
+			if (ai.scorm.cmi.entry == CmiConstants.ENTRY_ABINITIO) {
+				ai.debugScreen.msg("ai.scorm.cmi.entry = ab-initio")				
+				ai.scorm.performAutoSave = false;				
+				ai.scorm.cmi.credit = CmiConstants.CREDIT_NOCREDIT;
+				ai.scorm.cmi.completion_status = CmiConstants.COMPLETION_STATUS_INCOMPLETE;
+				ai.scorm.cmi.success_status = CmiConstants.SUCCESS_STATUS_FAILED;
+				ai.scorm.cmi.progress_measure = 0;
+				ai.scorm.cmi.score.min = 0;
+				ai.scorm.cmi.score.max = 100;
+				ai.scorm.cmi.exit = CmiConstants.EXIT_SUSPEND;
+				ai.scorm.save();
+				
+			} 
+			
+			ai.debugScreen.msg(ai.scorm.cmi.credit + "==" + CmiConstants.CREDIT_CREDIT + "?" + (ai.scorm.cmi.credit.toUpperCase() == CmiConstants.CREDIT_CREDIT.toUpperCase()?"Y":"N"));
+			if (ai.scorm.cmi.credit.toUpperCase() == CmiConstants.CREDIT_CREDIT.toUpperCase()) {
+				mode = MODE_EVALUATE;
+			}	
+			
+
+		}
+		
+		public function onScormConnectionError():void 
+		{
+			
 		}
 		
 	
