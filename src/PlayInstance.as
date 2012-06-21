@@ -140,18 +140,38 @@ package
 			var obj_answer:Object = new Object();
 			obj_answer.mantissa = answerMantissa;
 			obj_answer.exponent = answerExponent;
-			return { mode:(this.playMode == 0?"FREE":"EVAL"), mass1: scinotToObj(this.mass1), mass2:scinotToObj(this.mass2), distance:scinotToObj(this.distance), E:scinotToObj(this.energy), answer:obj_answer, score:this.score, obs:this.obs };
+			return { 
+				mode:(this.playMode == 0?"FREE":"EVAL"), 
+				mass1: scinotToObj(this.mass1), 
+				mass2:scinotToObj(this.mass2), 
+				distance:scinotToObj(this.distance), 
+				E:scinotToObj(this.energy), 
+				answer:obj_answer, 
+				score:this.score, 
+				obs:this.obs 
+				};
 		}
 		
-		public function scinotToObj(el:NotacaoCientifica) {
-			return { mant: el.mantissa, exp: el.exponent };
+		public function scinotToObj(el:NotacaoCientifica):Object {
+			return { mant: el.mantissa, exponent: el.exponent };
 		}
+		public function objToNotSci(el:Object):NotacaoCientifica {
+			return new NotacaoCientifica().setExpValues(el.mant, el.exponent);
+		}		
 		
 		/* INTERFACE cepa.ai.IPlayInstance */
 		
 		public function bind(obj:Object):void 
 		{
-			
+			_playMode = 0;
+			if (obj.mode == "EVAL") _playMode = 1;
+			this._mass1 = objToNotSci(obj.mass1);
+			this._mass2= objToNotSci(obj.mass2);
+			this._distance = objToNotSci(obj.distance);
+		
+			this._answerMantissa = obj.answer.mantissa;
+			this._answerExponent = obj.answer.exponent;
+			this.score = obj.score;
 		}
 		
 	

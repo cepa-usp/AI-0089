@@ -2,12 +2,15 @@ package
 {
 	import cepa.ai.AI;
 	import cepa.ai.AIConstants;
+	import cepa.ai.AIInstance;
 	import cepa.ai.AIObserver;
+	import cepa.ai.IPlayInstance;
 	import cepa.eval.ProgressiveEvaluator;
 	import cepa.scorm.CmiConstants;
 	import cepa.tutorial.CaixaTexto;
 	import cepa.tutorial.Tutorial;
 	import cepa.tutorial.TutorialEvent;
+	import com.adobe.serialization.json.JSON;
 	import com.eclecticdesignstudio.motion.Actuate;
 	import com.eclecticdesignstudio.motion.easing.Elastic;
 	import com.eclecticdesignstudio.motion.easing.Linear;
@@ -26,7 +29,7 @@ package
 	 * ...
 	 * @author Arthur
 	 */
-	public class Atividade extends Sprite implements AIObserver
+	public class Atividade extends Sprite implements AIObserver, AIInstance
 	{
 		public static const STATE_NONE:int = -1;
 		public static const STATE_READY:int = 0;
@@ -55,6 +58,7 @@ package
 		{
 			this.ai = ai;
 			ai.evaluator = new ProgressiveEvaluator(ai);
+			ai.ai_instance = this;
 			addChild(layerBackground);
 			layerBackground.addChild(new Background());
 			addChild(layerPlanetas);
@@ -239,8 +243,9 @@ package
 			blocoControle.txEnergy.txMantissa.text = "";
 			blocoControle.txEnergy.txExponent.text = "";
 			var play:PlayInstance = new PlayInstance();
-			playInstance = play;
 			play.playMode= mode
+			playInstance = play;
+			
 			var spr:Sprite = new Sprite();
 			spr.name = "play";
 			var planeta1:Planeta1 = new Planeta1();
@@ -412,11 +417,10 @@ package
 		public function onScormConnected():void 
 		{
 			// passar pro evaluator
-			
+			ai.scorm.cmi.exit = CmiConstants.EXIT_SUSPEND;
 			if (ai.scorm.cmi.entry == CmiConstants.ENTRY_ABINITIO) {
 				ai.debugScreen.msg("ai.scorm.cmi.entry = ab-initio")				
 				ai.scorm.performAutoSave = false;				
-				ai.scorm.cmi.credit = CmiConstants.CREDIT_NOCREDIT;
 				ai.scorm.cmi.completion_status = CmiConstants.COMPLETION_STATUS_INCOMPLETE;
 				ai.scorm.cmi.success_status = CmiConstants.SUCCESS_STATUS_FAILED;
 				ai.scorm.cmi.progress_measure = 0;
@@ -427,10 +431,6 @@ package
 				
 			} 
 			
-			ai.debugScreen.msg(ai.scorm.cmi.credit + "==" + CmiConstants.CREDIT_CREDIT + "?" + (ai.scorm.cmi.credit.toUpperCase() == CmiConstants.CREDIT_CREDIT.toUpperCase()?"Y":"N"));
-			if (ai.scorm.cmi.credit.toUpperCase() == CmiConstants.CREDIT_CREDIT.toUpperCase()) {
-				mode = MODE_EVALUATE;
-			}	
 			
 
 		}
@@ -438,6 +438,30 @@ package
 		public function onScormConnectionError():void 
 		{
 			
+		}
+		
+		/* INTERFACE cepa.ai.AIInstance */
+		
+		public function getData():Object 
+		{
+			var obj:Object = new Object();
+			obj.mode = mode;
+			return obj;
+		}
+		
+		public function readData(obj:Object) 
+		{
+			ai.debugScreen.msg("ativ:" + JSON.encode(obj))			
+			mode = obj.mode;
+			changeState(STATE_RESET);
+		}
+		
+		/* INTERFACE cepa.ai.AIInstance */
+		
+		public function createNewPlayInstance():IPlayInstance 
+		{
+			var p:PlayInstance = new PlayInstance();
+			return p;
 		}
 		
 	
