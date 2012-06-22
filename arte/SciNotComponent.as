@@ -34,7 +34,7 @@
 		
 		
 		public function setValue(mantissa:Number, exponent:int):void {
-			this.txMantissa.text = mantissa.toFixed(2);
+			this.txMantissa.text = mantissa.toFixed(2).replace(".", ",");
 			this.txExponent.text = exponent.toString();
 		}
 		

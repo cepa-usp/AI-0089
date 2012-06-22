@@ -164,6 +164,7 @@ package
 			stats.nTotal.text = nTotal.toString();
 			stats.nValendo.text = nValendo.toString();
 			stats.nNaoValendo.text = nNaoValendo.toString();
+			stats.valendoText.visible =  (mode==MODE_FREEPLAY)
 			stats.scoreMin.text = scoreMin.toString();
 			stats.scoreTotal.text = scoreTotal.toString();
 			stats.scoreValendo.text = scoreValendo.toString();
@@ -306,7 +307,7 @@ package
 			lb_p1.setValue(playInstance.mass1.mantissa, playInstance.mass1.exponent);
 			lb_p1.x = p1.x;
 			lb_p1.y = p1.y + 30;
-			lb_p1.txMantissa.text = "m = " + lb_p1.txMantissa.text;
+			lb_p1.txMantissa.text = "m=" + lb_p1.txMantissa.text;
 			s.addChild(lb_p1);
 
 			var lb_p2:SciNotComponent = new SciNotComponent();
@@ -315,7 +316,7 @@ package
 			lb_p2.setValue(playInstance.mass2.mantissa, playInstance.mass2.exponent);			
 			lb_p2.x = p2.x;
 			lb_p2.y = p2.y + 30;
-			lb_p2.txMantissa.text = "m = " + lb_p2.txMantissa.text;
+			lb_p2.txMantissa.text = "m=" + lb_p2.txMantissa.text;
 			s.addChild(lb_p2);
 			
 			
