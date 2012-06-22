@@ -64,6 +64,8 @@ package
 		private var atividade:Atividade 
 		private function init(e:Event = null):void 
 		{
+			
+			
 			var ai:AI = new AI(this);
 			atividade = new Atividade(ai);
 			ai.container.messageLabel.visible = false;

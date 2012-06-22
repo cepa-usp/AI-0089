@@ -122,7 +122,9 @@ package
 		private var r:Number = 0;
 		public function rotateBg():void {			
 			r += 2;
-			Actuate.tween(Background(layerBackground.getChildAt(0)).estrelas, 2, { rotation:r} ).onComplete(rotateBg).ease(Linear.easeNone); 
+			if (r > 180) r = 0;
+			Actuate.tween(Background(layerBackground.getChildAt(0)).estrelas, 2, { rotation:r } ).onComplete(rotateBg).ease(Linear.easeNone); 
+			//trace(r)
 			
 		}
 		
